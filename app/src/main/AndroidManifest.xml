@@ -24,7 +24,6 @@
 
     <!-- Foreground service for continuous video playback -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -49,14 +48,12 @@
         <!-- Floating bubble service -->
         <service
             android:name=".service.FloatingBubbleService"
-            android:exported="false"
-            android:foregroundServiceType="camera" />
+            android:exported="false" />
 
         <!-- Camera injection foreground service -->
         <service
             android:name=".service.CameraService"
-            android:exported="false"
-            android:foregroundServiceType="camera" />
+            android:exported="false" />
 
     </application>
 </manifest>

@@ -8,7 +8,6 @@ import android.view.Surface;
 
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
-import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import java.util.ArrayList;
@@ -129,9 +128,7 @@ public class VideoEngine {
         releasePlayer(entry);
 
         try {
-            DefaultRenderersFactory factory = new DefaultRenderersFactory(appContext)
-                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON);
-            ExoPlayer player = new ExoPlayer.Builder(appContext, factory).build();
+            ExoPlayer player = new ExoPlayer.Builder(appContext).build();
 
             MediaItem item = MediaItem.fromUri(android.net.Uri.fromFile(new java.io.File(mediaPath)));
             player.setMediaItem(item);

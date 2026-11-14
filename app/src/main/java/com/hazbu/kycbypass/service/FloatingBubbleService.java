@@ -49,7 +49,13 @@ public class FloatingBubbleService extends Service {
             windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
             mainHandler = new Handler(Looper.getMainLooper());
             createNotificationChannel();
-            startForeground(NOTIFICATION_ID, buildNotification());
+
+            try {
+                startForeground(NOTIFICATION_ID, buildNotification());
+            } catch (Throwable t) {
+                android.util.Log.w("FloatingBubbleService", "startForeground failed: " + t.getMessage());
+            }
+
             createBubble();
         } catch (Throwable t) {
             android.util.Log.e("FloatingBubbleService", "onCreate crash: " + t.getMessage(), t);
@@ -143,7 +149,8 @@ public class FloatingBubbleService extends Service {
         boolean active = KycBypassApp.settingsManager.getIsActive();
         // Green dot = active, gray = inactive
         int colorRes = active ? com.hazbu.kycbypass.R.color.bubble_active : com.hazbu.kycbypass.R.color.bubble_inactive;
-        bubbleView.setBackgroundColor(getResources().getColor(colorRes, getTheme()));
+        int color = getResources().getColor(colorRes);
+        bubbleView.setBackgroundColor(color);
     }
 
     /**

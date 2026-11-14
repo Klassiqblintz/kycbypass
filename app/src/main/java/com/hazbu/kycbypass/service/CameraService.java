@@ -86,7 +86,12 @@ public class CameraService extends Service {
 
             // Start foreground notification
             createNotificationChannel();
-            startForeground(NOTIFICATION_ID, buildNotification());
+
+            try {
+                startForeground(NOTIFICATION_ID, buildNotification());
+            } catch (Throwable t) {
+                android.util.Log.w("CameraService", "startForeground failed: " + t.getMessage());
+            }
 
             // Watch for target app launch
             startTargetAppMonitor();
@@ -184,12 +189,10 @@ public class CameraService extends Service {
             if (activityManager == null) return null;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // Android 5+
                 android.app.ActivityManager.RunningTaskInfo taskInfo =
                         activityManager.getRunningTasks(1).get(0);
                 return taskInfo.topActivity != null ? taskInfo.topActivity.getPackageName() : null;
             } else {
-                // Android 4.x / older
                 java.util.List<android.app.ActivityManager.RunningAppProcessInfo> processes =
                         activityManager.getRunningAppProcesses();
                 if (processes != null && !processes.isEmpty()) {

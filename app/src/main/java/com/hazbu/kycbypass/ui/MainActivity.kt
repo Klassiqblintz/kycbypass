@@ -25,18 +25,6 @@ class MainActivity : AppCompatActivity() {
         try {
             setContentView(R.layout.activity_main)
 
-            // Overlay permission check
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this)) {
-                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
-                        data = android.net.Uri.parse("package:${packageName}")
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    startActivity(intent)
-                    Toast.makeText(this, "Grant overlay permission for floating bubble", Toast.LENGTH_LONG).show()
-                }
-            }
-
             setupUI()
         } catch (e: Throwable) {
             android.util.Log.e("MainActivity", "onCreate crash: " + e.message, e)
@@ -86,16 +74,7 @@ class MainActivity : AppCompatActivity() {
         updateStatus(tvStatus)
         tvMediaPath.text = settingsManager.getMediaPath() ?: "No media selected"
 
-        btnPickMedia.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                type = "video/*"
-            }
-            val picker = Intent.createChooser(intent, "Select video or image")
-            startActivity(picker)
-        }
-
-        // Handle pick result
-        registerForActivityResult(
+        val getContentLauncher = registerForActivityResult(
             androidx.activity.result.contract.ActivityResultContracts.GetContent()
         ) { uri: Uri? ->
             if (uri != null) {
@@ -106,6 +85,10 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Media selected", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+
+        btnPickMedia.setOnClickListener {
+            getContentLauncher.launch("video/*")
         }
 
         btnStartCamera.setOnClickListener {
