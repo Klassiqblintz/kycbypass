@@ -8,6 +8,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.hazbu.kycbypass.KycBypassApp;
+import com.hazbu.kycbypass.capture.CaptureManager;
 import com.hazbu.kycbypass.engine.VideoEngine;
 import com.hazbu.kycbypass.xposed.XC_MethodHook;
 import com.hazbu.kycbypass.xposed.XposedBridge;

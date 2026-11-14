@@ -116,7 +116,7 @@ public class CaptureManager {
         float rotatedSrcH = (rotation % 180 != 0 ? srcW : srcH);
 
         float scaleX = (float) targetW / rotatedSrcW;
-        float scaleY = (float targetH / rotatedSrcH;
+        float scaleY = (float) targetH / rotatedSrcH;
         float scale = Math.max(scaleX, scaleY);
 
         matrix.postScale(scale, scale);

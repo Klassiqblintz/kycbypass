@@ -21,7 +21,7 @@ public class XposedBridge {
 
     private static final String TAG = "XposedBridge";
     private static volatile boolean hasXposedBridge = false;
-    private static volatile Object xposedBridgeClass = null;
+    private static volatile Class<?> xposedBridgeClass = null;
     private static volatile Method hookMethodMethod = null;
     private static volatile Method hookAllMethodsMethod = null;
 

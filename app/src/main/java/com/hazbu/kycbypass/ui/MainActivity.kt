@@ -156,7 +156,8 @@ class MainActivity : AppCompatActivity() {
         // Try to detect running target app
         try {
             val am = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
-            val tasks = am.getRunningTasks(1)
+            val tasks = am.getRunningTasks(1) as? List<android.app.ActivityManager.RunningTaskInfo>
+                ?: emptyList()
             if (tasks.isNotEmpty()) {
                 val topPackage = tasks[0].topActivity?.packageName ?: ""
                 val apps = settingsManager.getTargetApps()
@@ -186,7 +187,7 @@ class MainActivity : AppCompatActivity() {
     private fun getAppName(packageName: String): String {
         try {
             val ai = packageManager.getApplicationInfo(packageName, 0)
-            return packageManager.getApplicationLabel(ai)?.toString() ?: packageName
+            return packageManager.getApplicationLabel(ai).toString()
         } catch (_: Exception) {
             return packageName
         }

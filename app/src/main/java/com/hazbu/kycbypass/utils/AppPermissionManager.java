@@ -222,7 +222,7 @@ public class AppPermissionManager {
      * Check if a package is in our target apps list.
      */
     private boolean isTargetApp(String packageName) {
-        return KycBypassApp.settingsManager.hasTargetApp(packageName);
+        return com.hazbu.kycbypass.KycBypassApp.settingsManager.hasTargetApp(packageName);
     }
 
     /**
