@@ -55,29 +55,29 @@ class MainActivity : AppCompatActivity() {
 
         // Rotation spinner
         val rotationAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item,
-            arrayOf("0°", "90°", "180°", "270°"))
+            arrayOf("0", "90", "180", "270"))
         rotationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spRotation.adapter = rotationAdapter
         spRotation.setSelection(settingsManager.rotationAngle / 90)
         spRotation.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                settingsManager.rotationAngle = position * 90
+                settingsManager.setRotationAngle(position * 90)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        cbMirror.isChecked = settingsManager.isMirrored
+        cbMirror.isChecked = settingsManager.isMirrored()
         cbMirror.setOnCheckedChangeListener { _, checked ->
-            settingsManager.isMirrored = checked
+            settingsManager.setMirrored(checked)
         }
 
-        cbLoop.isChecked = settingsManager.loopVideo
+        cbLoop.isChecked = settingsManager.getLoopVideo()
         cbLoop.setOnCheckedChangeListener { _, checked ->
-            settingsManager.loopVideo = checked
+            settingsManager.setLoopVideo(checked)
         }
 
         updateStatus(tvStatus)
-        tvMediaPath.text = settingsManager.mediaPath ?: "No media selected"
+        tvMediaPath.text = settingsManager.getMediaPath() ?: "No media selected"
 
         btnPickMedia.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
             if (uri != null) {
                 val path = uri.path
                 if (path != null) {
-                    settingsManager.mediaPath = path
+                    settingsManager.setMediaPath(path)
                     tvMediaPath.text = path
                     Toast.makeText(this, "Media selected", Toast.LENGTH_SHORT).show()
                 }
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
 
         btnGrantPermissions.setOnClickListener {
             val pm = AppPermissionManager(this)
-            for (pkg in settingsManager.targetApps) {
+            for (pkg in settingsManager.getTargetApps()) {
                 pm.grantTargetAppPermissions(pkg)
             }
             Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show()
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
 
         btnRevokePermissions.setOnClickListener {
             val pm = AppPermissionManager(this)
-            for (pkg in settingsManager.targetApps) {
+            for (pkg in settingsManager.getTargetApps()) {
                 pm.revokeTargetAppPermissions(pkg)
             }
             Toast.makeText(this, "Permissions revoked", Toast.LENGTH_SHORT).show()
@@ -148,17 +148,27 @@ class MainActivity : AppCompatActivity() {
     private fun updateStatus(tv: TextView) {
         val sb = StringBuilder()
         sb.append("Settings: ")
-        sb.append(if (settingsManager.isActive) "ACTIVE " else "INACTIVE ")
-        sb.append("Media: ${settingsManager.mediaPath ?: "none"}\n")
+        sb.append(if (settingsManager.isActive()) "ACTIVE " else "INACTIVE ")
+        sb.append("Media: ${settingsManager.getMediaPath() ?: "none"}\n")
 
         // Try to detect running target app
         try {
-            val am = getSystemService(ANDROID_SERVICE) as android.app.ActivityManager
+            val am = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
             val tasks = am.getRunningTasks(1)
             if (tasks.isNotEmpty()) {
-                val topPackage = tasks[0].topActivity?.packageName
-                if (settingsManager.targetApps.contains(topPackage)) {
-                    sb.append("Target app detected: ${getAppName(topPackage)}")
+                val topPackage = tasks[0].topActivity?.packageName ?: ""
+                val apps = settingsManager.getTargetApps()
+                var found = false
+                var foundName = ""
+                for (appPkg in apps) {
+                    if (appPkg == topPackage) {
+                        found = true
+                        foundName = getAppName(appPkg)
+                        break
+                    }
+                }
+                if (found) {
+                    sb.append("Target app detected: $foundName")
                 } else {
                     sb.append("No target app running")
                 }
@@ -173,7 +183,7 @@ class MainActivity : AppCompatActivity() {
     private fun getAppName(packageName: String): String {
         try {
             val ai = packageManager.getApplicationInfo(packageName, 0)
-            return packageManager.getLabel(ai)?.toString() ?: packageName
+            return packageManager.getApplicationLabel(ai)?.toString() ?: packageName
         } catch (_: Exception) {
             return packageName
         }

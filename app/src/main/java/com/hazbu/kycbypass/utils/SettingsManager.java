@@ -1,90 +1,97 @@
-package com.hazbu.kycbypass.utils
+package com.hazbu.kycbypass.utils;
 
-import android.content.Context
-import android.content.SharedPreferences
-import java.io.File
+import android.content.Context;
+import android.content.SharedPreferences;
+import java.util.Arrays;
 
-/**
- * Manages persistent settings: media path, target apps, rotation, mirroring, etc.
- * Stores config in /data/data/<package>/files/kycbypass_prefs
- */
-class SettingsManager {
+public class SettingsManager {
 
-    companion object {
-        const val PREFS_NAME = "kycbypass_prefs"
-        const val KEY_MEDIA_PATH = "media_path"
-        const val KEY_ROTATION = "rotation_angle"       // 0, 90, 180, 270
-        const val KEY_MIRRORED = "mirrored"
-        const val KEY_ACTIVE = "virtual_camera_active"
-        const val KEY_TARGET_APPS = "target_apps"        // comma-separated package names
-        const val KEY_LOOP_VIDEO = "loop_video"
+    public static final String PREFS_NAME = "kycbypass_prefs";
+    public static final String KEY_MEDIA_PATH = "media_path";
+    public static final String KEY_ROTATION = "rotation_angle";
+    public static final String KEY_MIRRORED = "mirrored";
+    public static final String KEY_ACTIVE = "virtual_camera_active";
+    public static final String KEY_TARGET_APPS = "target_apps";
+    public static final String KEY_LOOP_VIDEO = "loop_video";
+
+    private SharedPreferences prefs;
+
+    public void init(Context context) {
+        prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    private var prefs: SharedPreferences? = null
-    private val mediaDir = File("/sdcard/DCIM/Camera1/")
-
-    fun init(context: Context) {
-        prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        mediaDir.mkdirs()
+    public String getMediaPath() {
+        return prefs.getString(KEY_MEDIA_PATH, null);
     }
 
-    // ---- Media ----
-    var mediaPath: String?
-        get() = prefs?.getString(KEY_MEDIA_PATH, null)
-        set(value) {
-            prefs?.edit()?.putString(KEY_MEDIA_PATH, value)?.apply()
+    public void setMediaPath(String path) {
+        prefs.edit().putString(KEY_MEDIA_PATH, path).apply();
+    }
+
+    public int getRotationAngle() {
+        return prefs.getInt(KEY_ROTATION, 0);
+    }
+
+    public void setRotationAngle(int angle) {
+        prefs.edit().putInt(KEY_ROTATION, angle % 360).apply();
+    }
+
+    public boolean isMirrored() {
+        return prefs.getBoolean(KEY_MIRRORED, false);
+    }
+
+    public void setMirrored(boolean mirrored) {
+        prefs.edit().putBoolean(KEY_MIRRORED, mirrored).apply();
+    }
+
+    public boolean isActive() {
+        return prefs.getBoolean(KEY_ACTIVE, false);
+    }
+
+    public void setActive(boolean active) {
+        prefs.edit().putBoolean(KEY_ACTIVE, active).apply();
+    }
+
+    public boolean getLoopVideo() {
+        return prefs.getBoolean(KEY_LOOP_VIDEO, true);
+    }
+
+    public void setLoopVideo(boolean loop) {
+        prefs.edit().putBoolean(KEY_LOOP_VIDEO, loop).apply();
+    }
+
+    public String[] getTargetApps() {
+        String raw = prefs.getString(KEY_TARGET_APPS, "");
+        if (raw == null || raw.isEmpty()) {
+            return new String[0];
         }
-
-    fun setMediaPath(path: String?) {
-        mediaPath = path
-    }
-
-    fun getMediaFile(): File? {
-        val path = mediaPath
-        return if (path != null && File(path).exists()) File(path) else null
-    }
-
-    // ---- Transforms ----
-    var rotationAngle: Int
-        get() = prefs?.getInt(KEY_ROTATION, 0) ?: 0
-        set(value) {
-            prefs?.edit()?.putInt(KEY_ROTATION, value % 360)?.apply()
+        String[] parts = raw.split(",");
+        java.util.List<String> list = new java.util.ArrayList<>();
+        for (String p : parts) {
+            String trimmed = p.trim();
+            if (!trimmed.isEmpty()) {
+                list.add(trimmed);
+            }
         }
-
-    var isMirrored: Boolean
-        get() = prefs?.getBoolean(KEY_MIRRORED, false) ?: false
-        set(value) {
-            prefs?.edit()?.putBoolean(KEY_MIRRORED, value)?.apply()
-        }
-
-    // ---- State ----
-    var isActive: Boolean
-        get() = prefs?.getBoolean(KEY_ACTIVE, false) ?: false
-        set(value) {
-            prefs?.edit()?.putBoolean(KEY_ACTIVE, value)?.apply()
-        }
-
-    // ---- Scoping ----
-    fun getTargetApps(): Set<String> {
-        val raw = prefs?.getString(KEY_TARGET_APPS, "") ?: ""
-        return if (raw.isEmpty()) emptySet() else raw.split(',').map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+        return list.toArray(new String[0]);
     }
 
-    fun addTargetApp(packageName: String) {
-        val current = getTargetApps() + packageName
-        prefs?.edit()?.putString(KEY_TARGET_APPS, current.joinToString(","))?.apply()
+    public void addTargetApp(String packageName) {
+        java.util.List<String> list = new java.util.ArrayList<>(Arrays.asList(getTargetApps()));
+        list.add(packageName);
+        prefs.edit().putString(KEY_TARGET_APPS, String.join(",", list)).apply();
     }
 
-    fun removeTargetApp(packageName: String) {
-        val current = getTargetApps().minus(packageName)
-        prefs?.edit()?.putString(KEY_TARGET_APPS, current.joinToString(","))?.apply()
+    public void removeTargetApp(String packageName) {
+        java.util.List<String> list = new java.util.ArrayList<>(Arrays.asList(getTargetApps()));
+        list.remove(packageName);
+        prefs.edit().putString(KEY_TARGET_APPS, String.join(",", list)).apply();
     }
 
-    fun hasTargetApp(packageName: String): Boolean = getTargetApps().contains(packageName)
-
-    var loopVideo: Boolean
-        get() = prefs?.getBoolean(KEY_LOOP_VIDEO, true) ?: true
-        set(value) {
-            prefs?.edit()?.putBoolean(KEY_LOOP_VIDEO, value)?.apply()
+    public boolean hasTargetApp(String packageName) {
+        for (String p : getTargetApps()) {
+            if (p.equals(packageName)) return true;
         }
+        return false;
+    }
 }

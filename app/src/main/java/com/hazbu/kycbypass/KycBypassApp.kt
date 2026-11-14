@@ -1,7 +1,6 @@
 package com.hazbu.kycbypass
 
 import android.app.Application
-import com.hazbu.kycbypass.utils.SettingsManager
 
 class KycBypassApp : Application() {
 
@@ -9,9 +8,11 @@ class KycBypassApp : Application() {
         @JvmStatic
         lateinit var instance: KycBypassApp
             private set
+    }
 
-        @JvmStatic
-        val settingsManager = SettingsManager()
+    @JvmStatic
+    val settingsManager: com.hazbu.kycbypass.utils.SettingsManager by lazy {
+        com.hazbu.kycbypass.utils.SettingsManager()
     }
 
     override fun onCreate() {
