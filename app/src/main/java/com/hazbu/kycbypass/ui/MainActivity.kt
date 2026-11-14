@@ -21,13 +21,18 @@ class MainActivity : AppCompatActivity() {
     private val settingsManager = KycBypassApp.settingsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         try {
+            android.util.Log.e("MainActivity", "=== ONCREATE START ===")
+            super.onCreate(savedInstanceState)
+            android.util.Log.e("MainActivity", "=== SUPER ONCREATE DONE ===")
             setContentView(R.layout.activity_main)
+            android.util.Log.e("MainActivity", "=== SET_CONTENT_VIEW DONE ===")
 
             setupUI()
+            android.util.Log.e("MainActivity", "=== SETUPUI DONE ===")
         } catch (e: Throwable) {
             android.util.Log.e("MainActivity", "onCreate crash: " + e.message, e)
+            android.util.Log.e("MainActivity", "STACKTRACE:", e)
             finish()
         }
     }

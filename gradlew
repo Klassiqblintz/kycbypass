@@ -1,9 +1,9 @@
 #!/bin/sh
 # Gradle wrapper script
-GRADLE_HOME="${HOME}/.gradle/wrapper/dists/gradle-8.2-bin"
-if [ -d "${GRADLE_HOME}/gradle-8.2" ]; then
-    exec "${GRADLE_HOME}/gradle-8.2/bin/gradle" "$@"
+GRADLE_HOME="/opt/gradle/gradle-8.2"
+if [ -d "${GRADLE_HOME}" ]; then
+    exec "${GRADLE_HOME}/bin/gradle" "$@"
 else
-    echo "Gradle not found. Run sdkmanager install 'command-line-tools;latest' and then run this script again."
+    echo "Gradle not found at ${GRADLE_HOME}"
     exit 1
 fi

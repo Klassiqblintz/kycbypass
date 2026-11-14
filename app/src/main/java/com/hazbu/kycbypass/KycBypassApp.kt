@@ -10,10 +10,14 @@ class KycBypassApp : Application() {
     }
 
     override fun onCreate() {
-        super.onCreate()
         try {
+            android.util.Log.e("KycBypassApp", "=== APPLICATION ONCREATE START ===")
+            super.onCreate()
+            android.util.Log.e("KycBypassApp", "=== SUPER ONCREATE DONE ===")
             instance = this
+            android.util.Log.e("KycBypassApp", "=== INSTANCE SET ===")
             settingsManager.init(this)
+            android.util.Log.e("KycBypassApp", "=== SETTINGS INIT DONE ===")
         } catch (e: Throwable) {
             android.util.Log.e("KycBypassApp", "onCreate crash: " + e.message, e)
         }
