@@ -44,12 +44,16 @@ public class FloatingBubbleService extends Service {
 
     @Override
     public void onCreate() {
-        super.onCreate();
-        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        mainHandler = new Handler(Looper.getMainLooper());
-        createNotificationChannel();
-        startForeground(NOTIFICATION_ID, buildNotification());
-        createBubble();
+        try {
+            super.onCreate();
+            windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+            mainHandler = new Handler(Looper.getMainLooper());
+            createNotificationChannel();
+            startForeground(NOTIFICATION_ID, buildNotification());
+            createBubble();
+        } catch (Throwable t) {
+            android.util.Log.e("FloatingBubbleService", "onCreate crash: " + t.getMessage(), t);
+        }
     }
 
     @Override

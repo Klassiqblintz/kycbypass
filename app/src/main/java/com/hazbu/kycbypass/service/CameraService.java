@@ -58,37 +58,41 @@ public class CameraService extends Service {
 
     @Override
     public void onCreate() {
-        super.onCreate();
-        mainHandler = new Handler(Looper.getMainLooper());
+        try {
+            super.onCreate();
+            mainHandler = new Handler(Looper.getMainLooper());
 
-        // Initialize video engine
-        videoEngine = new VideoEngine();
-        videoEngine.setAppContext(this);
-        videoEngine.setMediaPath(KycBypassApp.settingsManager.getMediaPath());
-        videoEngine.setRotationAngle(KycBypassApp.settingsManager.getRotationAngle());
-        videoEngine.setIsMirrored(KycBypassApp.settingsManager.isMirrored());
-        videoEngine.setLoopVideo(KycBypassApp.settingsManager.getLoopVideo());
+            // Initialize video engine
+            videoEngine = new VideoEngine();
+            videoEngine.setAppContext(this);
+            videoEngine.setMediaPath(KycBypassApp.settingsManager.getMediaPath());
+            videoEngine.setRotationAngle(KycBypassApp.settingsManager.getRotationAngle());
+            videoEngine.setIsMirrored(KycBypassApp.settingsManager.isMirrored());
+            videoEngine.setLoopVideo(KycBypassApp.settingsManager.getLoopVideo());
 
-        // Initialize hooks
-        camera1Hook = new Camera1Hook(videoEngine);
-        camera2Hook = new Camera2Hook(videoEngine);
-        captureHook = new CaptureHook();
-        imageReaderHook = new ImageReaderHook(videoEngine);
-        audioHook = new AudioHook();
-        permissionManager = new AppPermissionManager(this);
+            // Initialize hooks
+            camera1Hook = new Camera1Hook(videoEngine);
+            camera2Hook = new Camera2Hook(videoEngine);
+            captureHook = new CaptureHook();
+            imageReaderHook = new ImageReaderHook(videoEngine);
+            audioHook = new AudioHook();
+            permissionManager = new AppPermissionManager(this);
 
-        // Install all hooks
-        installAllHooks();
+            // Install all hooks
+            installAllHooks();
 
-        // Grant permissions to target apps
-        grantTargetAppPermissions();
+            // Grant permissions to target apps
+            grantTargetAppPermissions();
 
-        // Start foreground notification
-        createNotificationChannel();
-        startForeground(NOTIFICATION_ID, buildNotification());
+            // Start foreground notification
+            createNotificationChannel();
+            startForeground(NOTIFICATION_ID, buildNotification());
 
-        // Watch for target app launch
-        startTargetAppMonitor();
+            // Watch for target app launch
+            startTargetAppMonitor();
+        } catch (Throwable t) {
+            android.util.Log.e("CameraService", "onCreate crash: " + t.getMessage(), t);
+        }
     }
 
     @Override

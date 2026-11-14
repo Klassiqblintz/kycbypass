@@ -22,36 +22,43 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        try {
+            setContentView(R.layout.activity_main)
 
-        // Overlay permission check
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
-                    data = android.net.Uri.parse("package:${packageName}")
+            // Overlay permission check
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
+                        data = android.net.Uri.parse("package:${packageName}")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    startActivity(intent)
+                    Toast.makeText(this, "Grant overlay permission for floating bubble", Toast.LENGTH_LONG).show()
                 }
-                startActivity(intent)
-                Toast.makeText(this, "Grant overlay permission for floating bubble", Toast.LENGTH_LONG).show()
             }
-        }
 
-        setupUI()
+            setupUI()
+        } catch (e: Throwable) {
+            android.util.Log.e("MainActivity", "onCreate crash: " + e.message, e)
+            finish()
+        }
     }
 
     private fun setupUI() {
-        val tvStatus = findViewById<TextView>(R.id.tvStatus)
-        val btnStartCamera = findViewById<Button>(R.id.btnStartCamera)
-        val btnStopCamera = findViewById<Button>(R.id.btnStopCamera)
-        val btnStartBubble = findViewById<Button>(R.id.btnStartBubble)
-        val btnStopBubble = findViewById<Button>(R.id.btnStopBubble)
-        val btnGrantPermissions = findViewById<Button>(R.id.btnGrantPermissions)
-        val btnRevokePermissions = findViewById<Button>(R.id.btnRevokePermissions)
-        val btnPickMedia = findViewById<Button>(R.id.btnPickMedia)
-        val tvMediaPath = findViewById<TextView>(R.id.tvMediaPath)
-        val spRotation = findViewById<Spinner>(R.id.spRotation)
-        val cbMirror = findViewById<CheckBox>(R.id.cbMirror)
-        val cbLoop = findViewById<CheckBox>(R.id.cbLoop)
-        val tvTargetApps = findViewById<TextView>(R.id.tvTargetApps)
+        try {
+            val tvStatus = findViewById<TextView>(R.id.tvStatus)
+            val btnStartCamera = findViewById<Button>(R.id.btnStartCamera)
+            val btnStopCamera = findViewById<Button>(R.id.btnStopCamera)
+            val btnStartBubble = findViewById<Button>(R.id.btnStartBubble)
+            val btnStopBubble = findViewById<Button>(R.id.btnStopBubble)
+            val btnGrantPermissions = findViewById<Button>(R.id.btnGrantPermissions)
+            val btnRevokePermissions = findViewById<Button>(R.id.btnRevokePermissions)
+            val btnPickMedia = findViewById<Button>(R.id.btnPickMedia)
+            val tvMediaPath = findViewById<TextView>(R.id.tvMediaPath)
+            val spRotation = findViewById<Spinner>(R.id.spRotation)
+            val cbMirror = findViewById<CheckBox>(R.id.cbMirror)
+            val cbLoop = findViewById<CheckBox>(R.id.cbLoop)
+            val tvTargetApps = findViewById<TextView>(R.id.tvTargetApps)
 
         // Rotation spinner
         val rotationAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item,
@@ -144,6 +151,9 @@ class MainActivity : AppCompatActivity() {
                 pm.revokeTargetAppPermissions(targetApps[i])
             }
             Toast.makeText(this, "Permissions revoked", Toast.LENGTH_SHORT).show()
+        }
+        } catch (e: Throwable) {
+            android.util.Log.e("MainActivity", "setupUI crash: " + e.message, e)
         }
     }
 

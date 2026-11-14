@@ -11,7 +11,11 @@ class KycBypassApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        settingsManager.init(this)
+        try {
+            instance = this
+            settingsManager.init(this)
+        } catch (e: Throwable) {
+            android.util.Log.e("KycBypassApp", "onCreate crash: " + e.message, e)
+        }
     }
 }
