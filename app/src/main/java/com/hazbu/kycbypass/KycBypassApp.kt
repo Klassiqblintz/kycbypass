@@ -5,19 +5,17 @@ import android.app.Application
 class KycBypassApp : Application() {
 
     companion object {
-        @JvmStatic
-        lateinit var instance: KycBypassApp
-            private set
-    }
-
-    @JvmStatic
-    val settingsManager: com.hazbu.kycbypass.utils.SettingsManager by lazy {
-        com.hazbu.kycbypass.utils.SettingsManager()
+        @JvmStatic val instance: KycBypassApp
+            get() = Companion._instance
+        private var _instance: KycBypassApp? = null
+        @JvmStatic val settingsManager: com.hazbu.kycbypass.utils.SettingsManager
+            get() = Companion._settingsManager
+        private val _settingsManager = com.hazbu.kycbypass.utils.SettingsManager()
     }
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        settingsManager.init(this)
+        Companion._instance = this
+        Companion._settingsManager.init(this)
     }
 }

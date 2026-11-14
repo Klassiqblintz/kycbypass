@@ -2,7 +2,9 @@ package com.hazbu.kycbypass.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class SettingsManager {
 
@@ -60,38 +62,35 @@ public class SettingsManager {
         prefs.edit().putBoolean(KEY_LOOP_VIDEO, loop).apply();
     }
 
-    public String[] getTargetApps() {
+    public List<String> getTargetApps() {
         String raw = prefs.getString(KEY_TARGET_APPS, "");
         if (raw == null || raw.isEmpty()) {
-            return new String[0];
+            return new ArrayList<String>();
         }
         String[] parts = raw.split(",");
-        java.util.List<String> list = new java.util.ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (String p : parts) {
             String trimmed = p.trim();
             if (!trimmed.isEmpty()) {
                 list.add(trimmed);
             }
         }
-        return list.toArray(new String[0]);
+        return list;
     }
 
     public void addTargetApp(String packageName) {
-        java.util.List<String> list = new java.util.ArrayList<>(Arrays.asList(getTargetApps()));
+        List<String> list = new ArrayList<String>(getTargetApps());
         list.add(packageName);
         prefs.edit().putString(KEY_TARGET_APPS, String.join(",", list)).apply();
     }
 
     public void removeTargetApp(String packageName) {
-        java.util.List<String> list = new java.util.ArrayList<>(Arrays.asList(getTargetApps()));
+        List<String> list = new ArrayList<String>(getTargetApps());
         list.remove(packageName);
         prefs.edit().putString(KEY_TARGET_APPS, String.join(",", list)).apply();
     }
 
     public boolean hasTargetApp(String packageName) {
-        for (String p : getTargetApps()) {
-            if (p.equals(packageName)) return true;
-        }
-        return false;
+        return getTargetApps().contains(packageName);
     }
 }

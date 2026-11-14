@@ -130,16 +130,18 @@ class MainActivity : AppCompatActivity() {
 
         btnGrantPermissions.setOnClickListener {
             val pm = AppPermissionManager(this)
-            for (pkg in settingsManager.getTargetApps()) {
-                pm.grantTargetAppPermissions(pkg)
+            val targetApps = settingsManager.getTargetApps()
+            for (i in targetApps.indices) {
+                pm.grantTargetAppPermissions(targetApps[i])
             }
             Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show()
         }
 
         btnRevokePermissions.setOnClickListener {
             val pm = AppPermissionManager(this)
-            for (pkg in settingsManager.getTargetApps()) {
-                pm.revokeTargetAppPermissions(pkg)
+            val targetApps = settingsManager.getTargetApps()
+            for (i in targetApps.indices) {
+                pm.revokeTargetAppPermissions(targetApps[i])
             }
             Toast.makeText(this, "Permissions revoked", Toast.LENGTH_SHORT).show()
         }
@@ -160,7 +162,8 @@ class MainActivity : AppCompatActivity() {
                 val apps = settingsManager.getTargetApps()
                 var found = false
                 var foundName = ""
-                for (appPkg in apps) {
+                for (i in apps.indices) {
+                    val appPkg = apps[i]
                     if (appPkg == topPackage) {
                         found = true
                         foundName = getAppName(appPkg)
