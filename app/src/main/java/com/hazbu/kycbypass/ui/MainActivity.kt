@@ -155,10 +155,12 @@ class MainActivity : AppCompatActivity() {
 
         // Try to detect running target app
         try {
-            val am = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
-            @Suppress("DEPRECATION")
-            val tasks = am.getRunningTasks(1)
-            if (tasks.isNotEmpty()) {
+            @SuppressWarnings("deprecation")
+            android.app.ActivityManager am =
+                    (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+            java.util.List<android.app.ActivityManager.RunningTaskInfo> tasks =
+                    am.getRunningTasks(1);
+            if (tasks != null && !tasks.isEmpty()) {
                 val topPackage = tasks[0].topActivity?.packageName ?: ""
                 val apps = settingsManager.getTargetApps()
                 var found = false
@@ -187,7 +189,8 @@ class MainActivity : AppCompatActivity() {
     private fun getAppName(packageName: String): String {
         try {
             val ai = packageManager.getApplicationInfo(packageName, 0)
-            return packageManager.getApplicationLabel(ai).toString()
+            val label = packageManager.getApplicationLabel(ai)
+            return if (label != null) label.toString() else packageName
         } catch (_: Exception) {
             return packageName
         }

@@ -266,11 +266,19 @@ public class CameraService extends Service {
      * Build the foreground notification.
      */
     private Notification buildNotification() {
+        int pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                java.lang.reflect.Field immutable = PendingIntent.class.getField("FLAG_IMMUTABLE");
+                pendingIntentFlags |= immutable.getInt(null);
+            } catch (Exception ignored) {}
+        }
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,
                 new Intent(this, MainActivity.class),
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                pendingIntentFlags
         );
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)

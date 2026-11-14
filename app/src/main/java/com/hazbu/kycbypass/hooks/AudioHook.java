@@ -235,13 +235,14 @@ public class AudioHook {
             int bytesRead = 0;
             long endTimeUs = -1;
 
-            // Try to get duration for looping via hidden API
+            // Try to get duration for looping via track format
             String duration = null;
             try {
-                java.lang.reflect.Method getFormat = android.media.MediaExtractor.class.getMethod("getFormat");
-                android.media.MediaFormat fmt = (android.media.MediaFormat) getFormat.invoke(extractor);
-                if (fmt != null) {
-                    duration = fmt.getString(android.media.MediaFormat.KEY_DURATION);
+                if (extractor.getTrackCount() > 0) {
+                    android.media.MediaFormat fmt = extractor.getTrackFormat(0);
+                    if (fmt != null) {
+                        duration = fmt.getString(android.media.MediaFormat.KEY_DURATION);
+                    }
                 }
             } catch (Exception ignored) {}
             if (duration != null) {

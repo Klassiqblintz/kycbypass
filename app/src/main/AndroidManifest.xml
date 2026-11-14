@@ -5,6 +5,7 @@
     <!-- Camera -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- Storage for media files -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />

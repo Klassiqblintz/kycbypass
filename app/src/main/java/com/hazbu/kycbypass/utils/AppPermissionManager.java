@@ -184,7 +184,8 @@ public class AppPermissionManager {
                 ApplicationInfo appInfo = pkg.applicationInfo;
                 if (appInfo == null) continue;
 
-                String appName = appInfo.loadLabel(packageManager).toString();
+                CharSequence label = appInfo.loadLabel(packageManager);
+                String appName = (label != null) ? label.toString() : pkg.packageName;
                 boolean hasCameraPermission = hasPermission(pkg, "android.permission.CAMERA");
                 boolean hasStoragePermission = hasPermission(pkg, "android.permission.READ_EXTERNAL_STORAGE")
                         || hasPermission(pkg, "android.permission.READ_MEDIA_IMAGES");
