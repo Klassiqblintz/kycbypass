@@ -93,4 +93,12 @@ public class SettingsManager {
     public boolean hasTargetApp(String packageName) {
         return getTargetApps().contains(packageName);
     }
+
+    public boolean getIsActive() {
+        return isActive();
+    }
+
+    public void setIsActive(boolean active) {
+        setActive(active);
+    }
 }

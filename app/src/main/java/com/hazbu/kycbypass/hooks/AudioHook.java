@@ -124,7 +124,7 @@ public class AudioHook {
     private boolean isTargetAudioRecord(AudioRecord record) {
         try {
             int sampleRate = record.getSampleRate();
-            int channelConfig = record.getChannelMask();
+            int channelConfig = record.getChannelCount();
 
             // Most KYC apps use 16kHz or 44.1kHz mono/stereo
             if (sampleRate == 16000 || sampleRate == 44100 || sampleRate == 48000) {
@@ -162,7 +162,7 @@ public class AudioHook {
 
         // Loop if we've reached the end
         if (audioPosition >= audioBufferSize) {
-            if (KycBypassApp.settingsManager.loopVideo) {
+            if (KycBypassApp.settingsManager.getLoopVideo()) {
                 audioPosition = 0;
             } else {
                 // Fill remaining with zeros (silence)
@@ -236,7 +236,10 @@ public class AudioHook {
             long endTimeUs = -1;
 
             // Try to get duration for looping
-            String duration = extractor.getFormat().getString(android.media.MediaFormat.KEY_DURATION);
+            String duration = null;
+            try {
+                duration = extractor.getFormat().getString(android.media.MediaFormat.KEY_DURATION);
+            } catch (Exception ignored) {}
             if (duration != null) {
                 try { endTimeUs = Long.parseLong(duration); } catch (NumberFormatException ignored) {}
             }
@@ -245,7 +248,7 @@ public class AudioHook {
                 int sampleSize = extractor.readSampleData(buffer, bytesRead);
                 if (sampleSize < 0) {
                     // End of stream
-                    if (KycBypassApp.settingsManager.loopVideo && endTimeUs > 0) {
+                    if (KycBypassApp.settingsManager.getLoopVideo() && endTimeUs > 0) {
                         extractor.unselectTrack(audioTrackIndex);
                         extractor.selectTrack(audioTrackIndex);
                         extractor.seekTo(0, android.media.MediaExtractor.SEEK_TO_NEXT_SYNC);

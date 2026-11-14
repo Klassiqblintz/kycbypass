@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageScanner;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.provider.Settings;
@@ -111,29 +110,13 @@ public class AppPermissionManager {
     }
 
     /**
-     * Grant a runtime permission to an app.
-     * Requires android.permission.CHANGE_CONFIGURATION or running as system.
+     * Grant a runtime permission to an app using reflection.
      */
     private boolean grantRuntimePermission(String packageName, String permissionName) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                // Android 14+
-                packageManager.grantRuntimePermission(packageName, permissionName, 0);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Android 6-13
-                packageManager.grantRuntimePermission(packageName, permissionName);
-            } else {
-                // Android 5 and below — permissions are granted at install time
-                // Use setApplicationEnabledSetting to ensure the app is enabled
-                int current = packageManager.getApplicationEnabledSetting(packageName);
-                if (current == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-                    packageManager.setApplicationEnabledSetting(
-                            packageName,
-                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                            PackageManager.DONT_KILL_APP
-                    );
-                }
-            }
+            java.lang.reflect.Method method = PackageManager.class.getMethod(
+                    "grantRuntimePermission", String.class, String.class);
+            method.invoke(packageManager, packageName, permissionName);
             Log.d(TAG, "Granted " + permissionName + " to " + packageName);
             return true;
         } catch (Throwable t) {
@@ -143,12 +126,14 @@ public class AppPermissionManager {
     }
 
     /**
-     * Revoke a runtime permission from an app.
+     * Revoke a runtime permission from an app using reflection.
      */
     private boolean revokeRuntimePermission(String packageName, String permissionName) {
         try {
-            packageManager.revokeRuntimePermission(packageName, permissionName);
-            Log.d(TAG, "Revoke " + permissionName + " from " + packageName);
+            java.lang.reflect.Method method = PackageManager.class.getMethod(
+                    "revokeRuntimePermission", String.class, String.class);
+            method.invoke(packageManager, packageName, permissionName);
+            Log.d(TAG, "Revoked " + permissionName + " from " + packageName);
             return true;
         } catch (Throwable t) {
             Log.w(TAG, "Revoke permission failed for " + packageName + ": " + t.getMessage());
@@ -164,7 +149,7 @@ public class AppPermissionManager {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 // Use hidden API via reflection
-                Method method = PackageManager.class.getMethod(
+                java.lang.reflect.Method method = PackageManager.class.getMethod(
                         "setApplicationEnabledSetting",
                         String.class, int.class, int.class
                 );
@@ -220,14 +205,13 @@ public class AppPermissionManager {
 
     private boolean hasPermission(PackageInfo pkg, String permissionName) {
         if (pkg.requestedPermissions == null) return false;
-        for (String perm : pkg.requestedPermissions) {
+        for (int i = 0; i < pkg.requestedPermissions.length; i++) {
+            String perm = pkg.requestedPermissions[i];
             if (perm.equals(permissionName)) {
-                int[] perms = pkg.requestedPermissionsFlags;
-                if (perms != null && perms.length > 0) {
-                    return (perms[pkg.requestedPermissions.indexOf(perm)]
+                if (pkg.requestedPermissionsFlags != null && i < pkg.requestedPermissionsFlags.length) {
+                    return (pkg.requestedPermissionsFlags[i]
                             & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
                 }
-                // If no flags, the app requests it but it's not yet granted
                 return true;
             }
         }

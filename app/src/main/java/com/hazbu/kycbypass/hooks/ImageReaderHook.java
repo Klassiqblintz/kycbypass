@@ -82,7 +82,7 @@ public class ImageReaderHook {
                     XposedBridge.hookMethod(method, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            ImageReader reader = (ImageReader) param.getResult();
+                            ImageReader reader = (ImageReader) param.result;
                             if (reader == null) return;
 
                             int maxImages = 0;
@@ -122,7 +122,7 @@ public class ImageReaderHook {
                             android.media.ImageReader.OnImageAvailableListener listener =
                                     (android.media.ImageReader.OnImageAvailableListener) param.args[0];
                             android.os.Handler handler =
-                                    (android.os.Handler) param.args.length > 1 ? param.args[1] : null;
+                                    (android.os.Handler) ((param.args.length > 1) ? param.args[1] : null);
 
                             if (listener == null) return;
 
@@ -238,8 +238,8 @@ public class ImageReaderHook {
                     mediaPath,
                     width,
                     height,
-                    KycBypassApp.settingsManager.rotationAngle,
-                    KycBypassApp.settingsManager.isMirrored,
+                    KycBypassApp.settingsManager.getRotationAngle(),
+                    KycBypassApp.settingsManager.isMirrored(),
                     (int) captureTimestampMs,
                     Integer.MAX_VALUE
             );

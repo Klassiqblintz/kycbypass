@@ -9,6 +9,7 @@ import android.net.Uri;
 import com.hazbu.kycbypass.KycBypassApp;
 import com.hazbu.kycbypass.capture.CaptureManager;
 import com.hazbu.kycbypass.xposed.XC_MethodHook;
+import com.hazbu.kycbypass.xposed.XC_MethodHook.MethodHookParam;
 import com.hazbu.kycbypass.xposed.XposedBridge;
 
 import java.io.FileDescriptor;
@@ -170,7 +171,7 @@ public class CaptureHook {
                     String mode = (String) param.args[1];
 
                     if (uri != null && mode != null && mode.contains("w")) {
-                        ParcelFileDescriptor pfd = (ParcelFileDescriptor) param.getResult();
+                        ParcelFileDescriptor pfd = (ParcelFileDescriptor) param.result;
                         if (pfd != null) {
                             byte[] replacement = getReplacementImage(param);
                             if (replacement != null) {
@@ -271,8 +272,8 @@ public class CaptureHook {
                 mediaPath,
                 targetW,
                 targetH,
-                KycBypassApp.settingsManager.rotationAngle,
-                KycBypassApp.settingsManager.isMirrored,
+                KycBypassApp.settingsManager.getRotationAngle(),
+                KycBypassApp.settingsManager.isMirrored(),
                 (int) captureTimestampMs,
                 Integer.MAX_VALUE
         );

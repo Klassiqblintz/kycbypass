@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             arrayOf("0", "90", "180", "270"))
         rotationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spRotation.adapter = rotationAdapter
-        spRotation.setSelection(settingsManager.rotationAngle / 90)
+        spRotation.setSelection(settingsManager.getRotationAngle() / 90)
         spRotation.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 settingsManager.setRotationAngle(position * 90)

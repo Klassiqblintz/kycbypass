@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
@@ -63,10 +64,10 @@ public class CameraService extends Service {
         // Initialize video engine
         videoEngine = new VideoEngine();
         videoEngine.setAppContext(this);
-        videoEngine.setMediaPath(KycBypassApp.settingsManager.mediaPath);
-        videoEngine.setRotationAngle(KycBypassApp.settingsManager.rotationAngle);
-        videoEngine.setIsMirrored(KycBypassApp.settingsManager.isMirrored);
-        videoEngine.setLoopVideo(KycBypassApp.settingsManager.loopVideo);
+        videoEngine.setMediaPath(KycBypassApp.settingsManager.getMediaPath());
+        videoEngine.setRotationAngle(KycBypassApp.settingsManager.getRotationAngle());
+        videoEngine.setIsMirrored(KycBypassApp.settingsManager.isMirrored());
+        videoEngine.setLoopVideo(KycBypassApp.settingsManager.getLoopVideo());
 
         // Initialize hooks
         camera1Hook = new Camera1Hook(videoEngine);
@@ -184,10 +185,14 @@ public class CameraService extends Service {
                         activityManager.getRunningTasks(1).get(0);
                 return taskInfo.topActivity != null ? taskInfo.topActivity.getPackageName() : null;
             } else {
-                // Android 4.x
-                String[] packages = activityManager.getRunningAppProcesses();
-                if (packages != null && packages.length > 0) {
-                    return packages[0];
+                // Android 4.x / older
+                java.util.List<android.app.ActivityManager.RunningAppProcessInfo> processes =
+                        activityManager.getRunningAppProcesses();
+                if (processes != null && !processes.isEmpty()) {
+                    android.app.ActivityManager.RunningAppProcessInfo info = processes.get(0);
+                    if (info != null && info.processName != null) {
+                        return info.processName;
+                    }
                 }
             }
         } catch (Throwable t) {
@@ -207,7 +212,7 @@ public class CameraService extends Service {
      * Activate hooks for a target app.
      */
     private void activateForApp(String packageName) {
-        if (KycBypassApp.settingsManager.isActive) {
+        if (KycBypassApp.settingsManager.getIsActive()) {
             if (!videoEngine.isPlaying()) {
                 videoEngine.setActive(true);
             }

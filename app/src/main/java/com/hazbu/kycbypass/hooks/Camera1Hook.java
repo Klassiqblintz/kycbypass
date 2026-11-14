@@ -189,7 +189,7 @@ public class Camera1Hook {
                                     if (param.args[1] != null)
                                         ((Camera.PictureCallback) param.args[1]).onPictureTaken(null, originalCamera);
                                     if (param.args[2] != null)
-                                        ((Camera.PictureCallback) param.args[2}).onPictureTaken(null, originalCamera);
+                                        ((Camera.PictureCallback) param.args[2]).onPictureTaken(replacement, originalCamera);
                                     originalCallback.onPictureTaken(replacement, originalCamera);
                                 } catch (Throwable ignored) {}
                             });
@@ -345,8 +345,8 @@ public class Camera1Hook {
                 mediaPath,
                 width,
                 height,
-                KycBypassApp.settingsManager.rotationAngle,
-                KycBypassApp.settingsManager.isMirrored,
+                KycBypassApp.settingsManager.getRotationAngle(),
+                KycBypassApp.settingsManager.isMirrored(),
                 (int) videoEngine.getCurrentPositionMs(),
                 Integer.MAX_VALUE
         );
@@ -358,17 +358,17 @@ public class Camera1Hook {
 
         try {
             // Use MediaMetadataRetriever to get a frame, then convert to NV21
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            android.media.MediaMetadataRetriever retriever = new android.media.MediaMetadataRetriever();
             retriever.setDataSource(mediaPath);
 
             long duration = 0;
-            String dur = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            String dur = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
             if (dur != null) {
                 try { duration = Long.parseLong(dur); } catch (NumberFormatException ignored) {}
             }
 
-            long loopedTime = (duration > 0) ? (SystemClock.elapsedRealtime() % duration) : 0;
-            Bitmap bitmap = retriever.getFrameAtTime(loopedTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST);
+            long loopedTime = (duration > 0) ? (android.os.SystemClock.elapsedRealtime() % duration) : 0;
+            android.graphics.Bitmap bitmap = retriever.getFrameAtTime(loopedTime * 1000, android.media.MediaMetadataRetriever.OPTION_CLOSEST);
             retriever.release();
 
             if (bitmap == null) return null;

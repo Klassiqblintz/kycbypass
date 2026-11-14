@@ -108,7 +108,7 @@ public class FloatingBubbleService extends Service {
                         : WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                android.util.PixelFormat.TRANSLUCENT
+                android.graphics.PixelFormat.TRANSLUCENT
         );
 
         // Position in top-right area
@@ -136,7 +136,7 @@ public class FloatingBubbleService extends Service {
      * Update the bubble icon/text based on current state.
      */
     private void updateBubbleAppearance() {
-        boolean active = KycBypassApp.settingsManager.isActive;
+        boolean active = KycBypassApp.settingsManager.getIsActive();
         // Green dot = active, gray = inactive
         int colorRes = active ? com.hazbu.kycbypass.R.color.bubble_active : com.hazbu.kycbypass.R.color.bubble_inactive;
         bubbleView.setBackgroundColor(getResources().getColor(colorRes, getTheme()));
@@ -146,11 +146,11 @@ public class FloatingBubbleService extends Service {
      * Toggle the virtual camera on/off.
      */
     private void toggleState() {
-        boolean current = KycBypassApp.settingsManager.isActive;
-        KycBypassApp.settingsManager.isActive = !current;
+        boolean current = KycBypassApp.settingsManager.getIsActive();
+        KycBypassApp.settingsManager.setIsActive(!current);
         updateBubbleAppearance();
 
-        String state = KycBypassApp.settingsManager.isActive ? "ON" : "OFF";
+        String state = KycBypassApp.settingsManager.getIsActive() ? "ON" : "OFF";
         Toast.makeText(this, "Virtual Camera: " + state, Toast.LENGTH_SHORT).show();
     }
 

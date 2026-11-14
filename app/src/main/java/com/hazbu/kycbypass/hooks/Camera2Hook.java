@@ -64,7 +64,7 @@ public class Camera2Hook {
 
                         Surface surface = null;
                         int surfaceIndex = -1;
-                        Object[] args = param.getArgs();
+                        Object[] args = param.args;
                         for (int i = 0; i < args.length; i++) {
                             if (args[i] instanceof Surface && ((Surface) args[i]).isValid()) {
                                 surface = (Surface) args[i];
