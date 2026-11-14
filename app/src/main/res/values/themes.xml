@@ -1,25 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.KycBypass" parent="Theme.AppCompat.DayNight.DarkActionBar">
-        <!-- Primary brand color -->
+    <!-- Custom color attributes so the app compiles without appcompat/material -->
+    <attr name="colorPrimary" format="color"/>
+    <attr name="colorOnPrimary" format="color"/>
+    <attr name="colorPrimaryContainer" format="color"/>
+    <attr name="colorOnPrimaryContainer" format="color"/>
+    <attr name="colorSecondary" format="color"/>
+    <attr name="colorOnSecondary" format="color"/>
+    <attr name="colorSecondaryContainer" format="color"/>
+    <attr name="colorOnSecondaryContainer" format="color"/>
+    <attr name="colorError" format="color"/>
+    <attr name="colorOnError" format="color"/>
+    <attr name="colorErrorContainer" format="color"/>
+    <attr name="colorOnErrorContainer" format="color"/>
+    <attr name="colorOnBackground" format="color"/>
+    <attr name="colorSurface" format="color"/>
+    <attr name="colorOnSurface" format="color"/>
+    <attr name="colorSurfaceVariant" format="color"/>
+    <attr name="colorOnSurfaceVariant" format="color"/>
+
+    <style name="Theme.KycBypass" parent="android:Theme.Material.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorPrimaryContainer">@color/primary_container</item>
         <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
-
-        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorOnSecondary">@color/on_secondary</item>
         <item name="colorSecondaryContainer">@color/secondary_container</item>
         <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
-
-        <!-- Error color -->
         <item name="colorError">@color/error</item>
         <item name="colorOnError">@color/on_error</item>
         <item name="colorErrorContainer">@color/error_container</item>
         <item name="colorOnErrorContainer">@color/on_error_container</item>
-
-        <!-- Background and surface colors -->
         <item name="android:colorBackground">@color/background</item>
         <item name="colorOnBackground">@color/on_background</item>
         <item name="colorSurface">@color/surface</item>
