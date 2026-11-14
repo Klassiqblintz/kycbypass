@@ -155,12 +155,10 @@ class MainActivity : AppCompatActivity() {
 
         // Try to detect running target app
         try {
-            @SuppressWarnings("deprecation")
-            android.app.ActivityManager am =
-                    (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
-            java.util.List<android.app.ActivityManager.RunningTaskInfo> tasks =
-                    am.getRunningTasks(1);
-            if (tasks != null && !tasks.isEmpty()) {
+            @Suppress("DEPRECATION")
+            val am = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
+            val tasks = am.getRunningTasks(1)
+            if (tasks != null && tasks.isNotEmpty()) {
                 val topPackage = tasks[0].topActivity?.packageName ?: ""
                 val apps = settingsManager.getTargetApps()
                 var found = false
