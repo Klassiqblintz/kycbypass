@@ -6,7 +6,7 @@ class KycBypassApp : Application() {
 
     companion object {
         @JvmStatic val instance: KycBypassApp
-            get() = Companion._instance
+            get() = Companion._instance!!
         private var _instance: KycBypassApp? = null
         @JvmStatic val settingsManager: com.hazbu.kycbypass.utils.SettingsManager
             get() = Companion._settingsManager
